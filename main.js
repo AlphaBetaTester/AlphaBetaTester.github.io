@@ -81,7 +81,7 @@ window.onload = function() {
 		document.getElementById('dashboard').classList.add('active');
 	}
 
-	document.getElementById('whatisusine').onclick = function(ev) {
+	document.getElementById('whatisalphabetatester').onclick = function(ev) {
 		document.getElementById('home').classList.remove('active');
 		document.getElementById('about').classList.add('active');
 	};

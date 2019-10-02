@@ -222,7 +222,7 @@ html, body {
 #blueprints {
 	left:40vw;
 	top:0vh;
-	width:calc(60vw - 20px);
+	width:calc(40vw - 20px);
 	height:calc(30vh - 20px);
 	background:var(--secondary-accent);
 	overflow-y:scroll;
@@ -246,14 +246,6 @@ html, body {
 	font-size:200%;
 }
 
-#blueprints div.blueprint {
-	float:left;
-	margin:5px;
-	width:calc(33.33% - 10px);
-	height:calc(30% - 10px);
-	background:var(--secondary-accent-1);
-}
-
 #blueprints>h1 {
 	font-family:'Open Sans';
 	color:var(--primary-text-color);
@@ -268,6 +260,14 @@ html, body {
 	-ms-user-select:none;
 	-o-user-select:none;
 	user-select:none;
+}
+
+#blueprints div.blueprint {
+	float:left;
+	margin:5px;
+	width:calc(33.33% - 10px);
+	height:calc(30% - 10px);
+	background:var(--secondary-accent-1);
 }
 
 #blueprints div.blueprint h1 {
@@ -304,6 +304,40 @@ html, body {
 #blueprints.selected div.blueprint button {
 	font-size:125%;
 	height:15%;
+}
+
+#save {
+	margin:10px;
+	left:80vw;
+	top:0vh;
+	width:calc(20vw - 20px);
+	height:calc(15vh - 20px);
+	background:var(--secondary-accent);
+	color:var(--primary-text-color);
+	font-family:'Open Sans';
+	font-size:150%;
+	transition:all .5s;
+}
+
+#save:hover {
+	background:var(--secondary-accent-1);
+}
+
+#load {
+	margin:10px;
+	left:80vw;
+	top:15vh;
+	width:calc(20vw - 20px);
+	height:calc(15vh - 20px);
+	background:var(--secondary-accent);
+	color:var(--primary-text-color);
+	font-family:'Open Sans';
+	font-size:150%;
+	transition:all .5s;
+}
+
+#load:hover {
+	background:var(--secondary-accent-1);
 }
 
 #resources-assessment {

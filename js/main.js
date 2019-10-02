@@ -336,6 +336,7 @@ window.onload = function() {
 			// https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 			var a = document.createElement('a');
 			var json = {
+				'name':document.getElementById('name').value || 'alpha-beta-project',
 				'notes':[],
 				'blueprints':[],
 				'motivational-quote':document.getElementById('motivational-quote-generator').children[1].innerHTML,
@@ -364,7 +365,7 @@ window.onload = function() {
 				json['resources-assessment']['what-i-dont-have'].push(resources_assessment.children[2].children[1].children[i].children[0].value);
 			}
 			a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(json)));
-			a.setAttribute('download', 'alpha-beta-tester-project.json');
+			a.setAttribute('download', json.name + '.json');
 			a.style.display = 'none';
 			document.body.appendChild(a); a.click(); document.body.removeChild(a);
 		};
@@ -374,6 +375,7 @@ window.onload = function() {
 			var reader = new FileReader();
 			reader.onload = function(e) {
 				var json = JSON.parse(e.target.result);
+				document.getElementById('name').value = json.name;
 				while(notes.children.length - 2 < json.notes.length) {
 					var note = document.createElement('div');
 					note.classList.add('note');

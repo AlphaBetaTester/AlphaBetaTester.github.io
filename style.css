@@ -306,12 +306,28 @@ html, body {
 	height:15%;
 }
 
+#name {
+	margin:10px;
+	padding-left:20px;
+	left:80vw;
+	top:0vh;
+	width:calc(20vw - 40px);
+	height:calc(10vh - 20px);
+	background:var(--primary-accent);
+	color:var(--primary-text-color);
+	font-family:'Open Sans';
+	font-size:150%;
+	transition:all .5s;
+	display:flex;
+	line-height:calc(10vh - 20px);
+}
+
 #save {
 	margin:10px;
 	left:80vw;
-	top:0vh;
+	top:10vh;
 	width:calc(20vw - 20px);
-	height:calc(15vh - 20px);
+	height:calc(10vh - 20px);
 	background:var(--secondary-accent);
 	color:var(--primary-text-color);
 	font-family:'Open Sans';
@@ -326,9 +342,9 @@ html, body {
 #load {
 	margin:10px;
 	left:80vw;
-	top:15vh;
+	top:20vh;
 	width:calc(20vw - 20px);
-	height:calc(15vh - 20px);
+	height:calc(10vh - 20px);
 	background:var(--secondary-accent);
 	color:var(--primary-text-color);
 	font-family:'Open Sans';

@@ -337,6 +337,7 @@ window.onload = function() {
 			var a = document.createElement('a');
 			var json = {
 				'name':document.getElementById('name').value || 'alpha-beta-project',
+				'problem':document.getElementById('problem').children[1].value,
 				'notes':[],
 				'blueprints':[],
 				'motivational-quote':document.getElementById('motivational-quote-generator').children[1].innerHTML,
@@ -376,6 +377,9 @@ window.onload = function() {
 			reader.onload = function(e) {
 				var json = JSON.parse(e.target.result);
 				document.getElementById('name').value = json.name;
+				if(json.problem) {
+					document.getElementById('problem').children[1].value = json.problem;
+				}
 				while(notes.children.length - 2 < json.notes.length) {
 					var note = document.createElement('div');
 					note.classList.add('note');

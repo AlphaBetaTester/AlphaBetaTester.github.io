@@ -124,6 +124,7 @@ html, body {
 	width:calc(40vw - 20px);
 	height:calc(30vh - 20px);
 	overflow-y:scroll;
+	transition:all .5s;
 }
 
 #notes>h1 {
@@ -226,6 +227,7 @@ html, body {
 	height:calc(30vh - 20px);
 	background:var(--secondary-accent);
 	overflow-y:scroll;
+	transition:all .5s;
 }
 
 #blueprints>button {

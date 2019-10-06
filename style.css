@@ -32,6 +32,12 @@ html, body {
 	overflow-y:scroll;
 }
 
+textarea::placeholder {
+	color:inherit;
+	filter:brightness(75%);
+	/* TODO: this */
+}
+
 .screen {
 	float:left;
 	visibility:hidden;
@@ -124,7 +130,6 @@ html, body {
 	width:calc(40vw - 20px);
 	height:calc(30vh - 20px);
 	overflow-y:scroll;
-	transition:all .5s;
 }
 
 #notes>h1 {
@@ -227,7 +232,6 @@ html, body {
 	height:calc(30vh - 20px);
 	background:var(--secondary-accent);
 	overflow-y:scroll;
-	transition:all .5s;
 }
 
 #blueprints>button {
@@ -438,10 +442,6 @@ html, body {
 	font-size:100%;
 }
 
-#resources-assessment div textarea::placeholder {
-	color:#CACACA;
-}
-
 #resources-assessment div textarea, #resources-assessment div button {
 	float:left;
 	width:calc(15vw - 10px);
@@ -517,7 +517,7 @@ html, body {
 	top:50vh;
 	width:calc(35vw - 20px);
 	height:calc(50vh - 20px);
-	background:var(--primary-text-color);
+	background:var(--tertiary-accent);
 	color:black;
 }
 
@@ -533,10 +533,12 @@ html, body {
 
 #articles p {
 	float:left;
-	margin:10px;
+	padding:10px;
 	width:calc(35vw - 40px);
 	height:calc(40vh - 40px);
 	font-family:'Open Sans';
+	background:inherit;
+	filter:brightness(115%);
 }
 
 #problem {
@@ -612,8 +614,4 @@ html, body {
 	color:var(--primary-text-color);
 	line-height:5vh;
 	text-align:center;
-}
-
-#settings textarea::placeholder {
-	color:var(--primary-text-color);
 }

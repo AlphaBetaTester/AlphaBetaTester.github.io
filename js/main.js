@@ -1,3 +1,132 @@
+function createNote() {
+	var note = document.createElement('div');
+	note.classList.add('note');
+	var h1 = document.createElement('h1');
+	h1.innerHTML = 'Note';
+	note.appendChild(h1);
+	var btn = document.createElement('button');
+	btn.innerHTML = 'X';
+	btn.onclick = function() {
+		this.parentElement.parentElement.removeChild(this.parentElement);
+	}
+	note.appendChild(btn);
+	var text = document.createElement('textarea');
+	text.placeholder = 'Enter text here.';
+	text.spellcheck = 'false';
+	note.appendChild(text);
+}
+
+function createBlueprint() {
+	var blueprint = document.createElement('div');
+	blueprint.classList.add('blueprint');
+	var h1 = document.createElement('h1');
+	h1.innerHTML = 'Blueprint';
+	blueprint.appendChild(h1);
+	var btn = document.createElement('button');
+	btn.innerHTML = 'X';
+	btn.onclick = function() {
+		this.parentElement.parentElement.removeChild(this.parentElement);
+	}
+	blueprint.appendChild(btn);
+	var container = document.createElement('div');
+	var idea = document.createElement('textarea');
+	idea.classList.add('idea');
+	idea.placeholder = 'Write down your idea here.';
+	container.appendChild(idea);
+	var left = document.createElement('div');
+	left.classList.add('left');
+	var left_title = document.createElement('h1');
+	left_title.innerHTML = 'Draw Your Idea Here';
+	left.appendChild(left_title);
+	var canvas = document.createElement('canvas');
+	canvas._context = canvas.getContext('2d');
+	canvas._mouseDown = false;
+
+	canvas.oncontextmenu = function(ev) {
+		ev.preventDefault();
+	}
+
+	canvas.onmousedown = function(ev) {
+		ev.preventDefault();
+		this._mouseDown = true;
+		// https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
+		var r = this.getBoundingClientRect();
+		var x = (ev.clientX - r.left) * (canvas.width / r.width);
+		var y = (ev.clientY - r.top) * (canvas.height / r.height);
+		if(ev.which === 1) {
+			this._context.fillStyle = 'white';
+		}
+		else {
+			this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
+		}
+		this._context.fillRect(x - 2, y - 2, 4, 4);
+	};
+
+	canvas.onmousemove = function(ev) {
+		ev.preventDefault();
+		if(this._mouseDown) {
+			var r = this.getBoundingClientRect();
+			var x = (ev.clientX - r.left) * (canvas.width / r.width);
+			var y = (ev.clientY - r.top) * (canvas.height / r.height);
+			if(ev.which === 1) {
+				this._context.fillStyle = 'white';
+			}
+			else {
+				this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
+			}
+			this._context.fillRect(x - 2, y - 2, 4, 4);
+		}
+	};
+
+	canvas.onmouseup = function(ev) {
+		ev.preventDefault();
+		this._mouseDown = false;
+		var r = this.getBoundingClientRect();
+		var x = (ev.clientX - r.left) * (canvas.width / r.width);
+		var y = (ev.clientY - r.top) * (canvas.height / r.height);
+		if(ev.which === 1) {
+			this._context.fillStyle = 'white';
+		}
+		else {
+			this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
+		}
+		this._context.fillRect(x - 2, y - 2, 4, 4);
+	};
+	left.appendChild(canvas);
+	container.appendChild(left);
+	var right = document.createElement('div');
+	right.classList.add('right');
+	var right_title = document.createElement('h1');
+	right_title.innerHTML = 'What might go wrong, and what I will do.';
+	right.appendChild(right_title);
+	var lst = document.createElement('ul');
+	right.appendChild(lst);
+	var lst_btn = document.createElement('button');
+	lst_btn.innerHTML = '+';
+	lst_btn.onclick = function() {
+		var lst_item = document.createElement('li');
+		var left_text = document.createElement('textarea');
+		left_text.classList.add('left');
+		left_text.placeholder = 'What might go wrong.';
+		var right_text = document.createElement('textarea');
+		right_text.classList.add('right');
+		right_text.placeholder = 'My plan of action.'
+		var lst_item_btn = document.createElement('button');
+		lst_item_btn.innerHTML = 'X';
+		lst_item_btn.onclick = function() {
+			this.parentElement.parentElement.removeChild(this.parentElement);
+		};
+		lst_item.appendChild(left_text);
+		lst_item.appendChild(right_text);
+		lst_item.appendChild(lst_item_btn);
+		lst.appendChild(lst_item);
+	};
+	right.appendChild(lst_btn);
+	container.appendChild(right);
+	blueprint.appendChild(container);
+	return blueprint;
+}
+
 window.onload = function() {
 	var notes = document.getElementById('notes');
 	var blueprints = document.getElementById('blueprints');
@@ -103,93 +232,11 @@ window.onload = function() {
 
 	(function() {
 		document.getElementById('add-note').onclick = function(ev) {
-			var note = document.createElement('div');
-			note.classList.add('note');
-			var h1 = document.createElement('h1');
-			h1.innerHTML = 'Note';
-			note.appendChild(h1);
-			var btn = document.createElement('button');
-			btn.innerHTML = 'X';
-			btn.onclick = function() {
-				this.parentElement.parentElement.removeChild(this.parentElement);
-			}
-			note.appendChild(btn);
-			var text = document.createElement('textarea');
-			text.placeholder = 'Enter text here.';
-			text.spellcheck = 'false';
-			note.appendChild(text);
-			notes.insertBefore(note, document.getElementById('add-note'));
+			notes.insertBefore(createNote(), document.getElementById('add-note'));
 		};
 
 		document.getElementById('add-blueprint').onclick = function(ev) {
-			var blueprint = document.createElement('div');
-			blueprint.classList.add('blueprint');
-			var h1 = document.createElement('h1');
-			h1.innerHTML = 'Blueprint';
-			blueprint.appendChild(h1);
-			var btn = document.createElement('button');
-			btn.innerHTML = 'X';
-			btn.onclick = function() {
-				this.parentElement.parentElement.removeChild(this.parentElement);
-			}
-			blueprint.appendChild(btn);
-			var canvas = document.createElement('canvas');
-			canvas._context = canvas.getContext('2d');
-			canvas._mouseDown = false;
-
-			canvas.oncontextmenu = function(ev) {
-				ev.preventDefault();
-			}
-
-			canvas.onmousedown = function(ev) {
-				ev.preventDefault();
-				this._mouseDown = true;
-				// https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
-				var r = this.getBoundingClientRect();
-				var x = (ev.clientX - r.left) * (canvas.width / r.width);
-				var y = (ev.clientY - r.top) * (canvas.height / r.height);
-				if(ev.which === 1) {
-					this._context.fillStyle = 'white';
-				}
-				else {
-					this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-				}
-				this._context.fillRect(x - 2, y - 2, 4, 4);
-			};
-
-			canvas.onmousemove = function(ev) {
-				ev.preventDefault();
-				if(this._mouseDown) {
-					var r = this.getBoundingClientRect();
-					var x = (ev.clientX - r.left) * (canvas.width / r.width);
-					var y = (ev.clientY - r.top) * (canvas.height / r.height);
-					if(ev.which === 1) {
-						this._context.fillStyle = 'white';
-					}
-					else {
-						this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-					}
-					this._context.fillRect(x - 2, y - 2, 4, 4);
-				}
-			};
-
-			canvas.onmouseup = function(ev) {
-				ev.preventDefault();
-				this._mouseDown = false;
-				var r = this.getBoundingClientRect();
-				var x = (ev.clientX - r.left) * (canvas.width / r.width);
-				var y = (ev.clientY - r.top) * (canvas.height / r.height);
-				if(ev.which === 1) {
-					this._context.fillStyle = 'white';
-				}
-				else {
-					this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-				}
-				this._context.fillRect(x - 2, y - 2, 4, 4);
-			};
-
-			blueprint.appendChild(canvas);
-			blueprints.insertBefore(blueprint, document.getElementById('add-blueprint'));
+			blueprints.insertBefore(createBlueprint(), document.getElementById('add-blueprint'));
 		};
 
 		notes.children[0].onclick = function(ev) {
@@ -315,7 +362,18 @@ window.onload = function() {
 				json.notes.push(notes.children[i].children[2].value);
 			}
 			for(var i=1;i<blueprints.children.length-1;i++) {
-				json.blueprints.push(blueprints.children[i].children[2].toDataURL());
+				var premortem = [];
+				for(var j=0;j<blueprints.children[i].children[2].children[2].children[1].children.length;j++) {
+					premortem.push({
+						'possibility':blueprints.children[i].children[2].children[2].children[1].children[j].children[0].value,
+						'plan':blueprints.children[i].children[2].children[2].children[1].children[j].children[1].value
+					});
+				}
+				json.blueprints.push({
+					'name':blueprints.children[i].children[2].children[0].value,
+					'canvas':blueprints.children[i].children[2].children[1].children[1].toDataURL('image/png'),
+					'premortem':premortem
+				});
 			}
 			for(var i=0;i<resources_assessment.children[1].children[1].length;i++) {
 				json['resources-assessment']['what-i-have'].push(resources_assessment.children[1].children[1].children[i].children[0].value);
@@ -339,99 +397,44 @@ window.onload = function() {
 					document.getElementById('problem').children[1].value = json.problem;
 				}
 				while(notes.children.length - 2 < json.notes.length) {
-					var note = document.createElement('div');
-					note.classList.add('note');
-					var h1 = document.createElement('h1');
-					h1.innerHTML = 'Note';
-					note.appendChild(h1);
-					var btn = document.createElement('button');
-					btn.innerHTML = 'X';
-					btn.onclick = function() {
-						this.parentElement.parentElement.removeChild(this.parentElement);
-					}
-					note.appendChild(btn);
-					var text = document.createElement('textarea');
-					text.placeholder = 'Enter text here.';
-					text.spellcheck = 'false';
-					note.appendChild(text);
-					notes.insertBefore(note, document.getElementById('add-note'));
+					notes.insertBefore(createNote(), document.getElementById('add-note'));
 				}
 				for(var i=0;i<json.notes.length;i++) {
 					notes.children[i + 1].children[2].value = json.notes[i];
 				}
 				while(blueprints.children.length - 2 < json.blueprints.length) {
-					var blueprint = document.createElement('div');
-					blueprint.classList.add('blueprint');
-					var h1 = document.createElement('h1');
-					h1.innerHTML = 'Blueprint';
-					blueprint.appendChild(h1);
-					var btn = document.createElement('button');
-					btn.innerHTML = 'X';
-					btn.onclick = function() {
-						this.parentElement.parentElement.removeChild(this.parentElement);
-					}
-					blueprint.appendChild(btn);
-					var canvas = document.createElement('canvas');
-					canvas._context = canvas.getContext('2d');
-					canvas._mouseDown = false;
-
-					canvas.oncontextmenu = function(ev) {
-						ev.preventDefault();
-					}
-
-					canvas.onmousedown = function(ev) {
-						ev.preventDefault();
-						this._mouseDown = true;
-						// https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
-						var r = this.getBoundingClientRect();
-						var x = (ev.clientX - r.left) * (canvas.width / r.width);
-						var y = (ev.clientY - r.top) * (canvas.height / r.height);
-						if(ev.which === 1) {
-							this._context.fillStyle = 'white';
-						}
-						else {
-							this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-						}
-						this._context.fillRect(x - 2, y - 2, 4, 4);
-					};
-
-					canvas.onmousemove = function(ev) {
-						ev.preventDefault();
-						if(this._mouseDown) {
-							var r = this.getBoundingClientRect();
-							var x = (ev.clientX - r.left) * (canvas.width / r.width);
-							var y = (ev.clientY - r.top) * (canvas.height / r.height);
-							if(ev.which === 1) {
-								this._context.fillStyle = 'white';
-							}
-							else {
-								this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-							}
-							this._context.fillRect(x - 2, y - 2, 4, 4);
-						}
-					};
-
-					canvas.onmouseup = function(ev) {
-						ev.preventDefault();
-						this._mouseDown = false;
-						var r = this.getBoundingClientRect();
-						var x = (ev.clientX - r.left) * (canvas.width / r.width);
-						var y = (ev.clientY - r.top) * (canvas.height / r.height);
-						if(ev.which === 1) {
-							this._context.fillStyle = 'white';
-						}
-						else {
-							this._context.fillStyle = document.body.style.getPropertyValue('--secondary-accent-1') || '#395C74';
-						}
-						this._context.fillRect(x - 2, y - 2, 4, 4);
-					};
-
-					blueprint.appendChild(canvas);
-					blueprints.insertBefore(blueprint, document.getElementById('add-blueprint'));
+					blueprints.insertBefore(createBlueprint(), document.getElementById('add-blueprint'));
 				}
+				blueprints = document.getElementById('blueprints');
 				for(var i=0;i<json.blueprints.length;i++) {
-					blueprints[i + 1].children[2]._context.drawImage(json.blueprints[i], 0, 0,
-					  blueprints[i + 1].children[2].width, blueprints[i + 1].children[2].height);
+					blueprints.children[i + 1].children[2].children[0].value = json.blueprints[i].name;
+					var img = new Image();
+					img.src = json.blueprints[i].canvas;
+					img.onload = function() {
+						blueprints.children[i + 1].children[2].children[1].children[1]._context.drawImage(img, 0, 0,
+							blueprints.children[i + 1].children[2].children[1].children[1].width, blueprints.children[i + 1].children[2].children[1].children[1].height);
+					};
+					while(blueprints.children[i + 1].children[2].children[2].children[1].firstChild) {
+						blueprints.children[i + 1].children[2].children[2].children[1].removeChild(blueprints.children[i + 1].children[2].children[2].children[1].firstChild);
+					}
+					for(var j=0;j<json.blueprints[i].premortem.length;j++) {
+						var li = document.createElement('li');
+						var left = document.createElement('textarea');
+						left.classList.add('left');
+						left.placeholder = 'What might go wrong.';
+						left.value = json.blueprints[i].premortem[j].possibility;
+						li.appendChild(left);
+						var right = document.createElement('textarea');
+						right.classList.add('right');
+						right.placeholder = 'My plan of action.';
+						right.value = json.blueprints[i].premortem[j].plan;
+						li.appendChild(right);
+						var btn = document.createElement('button');
+						btn.innerHTML = 'X';
+						btn.onclick = function() { this.parentElement.parentElement.removeChild(this.parentElement); }
+						li.appendChild(btn);
+						blueprints.children[i + 1].children[2].children[2].children[1].appendChild(li);
+					}
 				}
 				for(var i=0;i<json['resources-assessment']['what-i-have'].length;i++) {
 					resources_assessment.children[1].children[1].children[i].children[0].innerHTML = json['resources-assessment']['what-i-have'][i];

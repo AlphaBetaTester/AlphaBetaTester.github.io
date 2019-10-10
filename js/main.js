@@ -133,6 +133,19 @@ window.onload = function() {
 	var resources_assessment = document.getElementById('resources-assessment');
 
 	(function() {
+		[...document.getElementsByClassName('article-title')].forEach(function(v) {
+			v.onclick = function() {
+				if(this.parentElement.classList.contains('active')) {
+					this.parentElement.classList.remove('active');
+				}
+				else {
+					this.parentElement.classList.add('active');
+				}
+			};
+		});
+	})();
+
+	(function() {
 		document.getElementById('primary-accent').onkeydown = function(ev) {
 			if(ev.keyCode === 13) {
 				ev.preventDefault();

@@ -199,7 +199,7 @@ window.onload = function() {
 	(function() {
 		document.getElementById('go').onclick = function() {
 			document.getElementById('home').classList.remove('active');
-			document.getElementById('dashboard').classList.add('active');
+			document.getElementById('signin').classList.add('active');
 		};
 
 		document.getElementById('whatisalphabetatester').onclick = function(ev) {
@@ -210,6 +210,214 @@ window.onload = function() {
 		document.getElementById('back').onclick = function(ev) {
 			document.getElementById('about').classList.remove('active');
 			document.getElementById('home').classList.add('active');
+		};
+
+		document.getElementById('password').onkeydown = function(ev) {
+			if(ev.keyCode === 13) {
+				ev.preventDefault();
+				document.getElementById('gotoprojects').click();
+			}
+		}
+
+		document.getElementById('gotoprojects').onclick = function(ev) {
+			var email = document.getElementById('email').value;
+			var password = document.getElementById('password').value;
+
+			// https://firebase.google.com/docs/firestore/
+			firebase.auth().signInWithEmailAndPassword(email, password).catch(function(signinErr) {
+				firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(createErr) {
+					console.err(signinErr, createErr);
+				});
+				firebase.auth().signinWithEmailAndPassword(email, password).catch(function(signinErr2) {
+					console.log(signinErr, signinErr2);
+				});
+			});
+
+			firebase.auth().onAuthStateChanged(function(user) {
+				if(user) {
+					firebase.firestore().collection('users').doc(email).get().then(function(doc) {
+						if(!doc.exists) {
+							firebase.firestore().collection('users').doc(email).set({'projects':[]});
+						}
+
+						document.getElementById('save').onclick = function() {
+							var json = {
+								'name':document.getElementById('name').value || 'alpha-beta-project',
+								'problem':document.getElementById('problem').children[1].value,
+								'notes':[],
+								'blueprints':[],
+								'motivational-quote':document.getElementById('motivational-quote-generator').children[1].innerHTML,
+								'resources-assessment':{
+									'what-i-have':[],
+									'what-i-dont-have':[]
+								},
+								'settings':{
+									'primary-accent':document.getElementById('primary-accent').value || '#2B5D60',
+									'secondary-accent':document.getElementById('secondary-accent').value || '#284B63',
+									'tertiary-accent':document.getElementById('tertiary-accent').value || '#ECECEC',
+									'primary-text-color':document.getElementById('primary-text-color').value || '#FFFFFF',
+									'background-color':document.getElementById('background-color').value || '#353535'
+								}
+							};
+							for(var i=1;i<notes.children.length-1;i++) {
+								json.notes.push(notes.children[i].children[2].value);
+							}
+							for(var i=1;i<blueprints.children.length-1;i++) {
+								var premortem = [];
+								for(var j=0;j<blueprints.children[i].children[2].children[2].children[1].children.length;j++) {
+									premortem.push({
+										'possibility':blueprints.children[i].children[2].children[2].children[1].children[j].children[0].value,
+										'plan':blueprints.children[i].children[2].children[2].children[1].children[j].children[1].value
+									});
+								}
+								json.blueprints.push({
+									'name':blueprints.children[i].children[2].children[0].value,
+									'canvas':blueprints.children[i].children[2].children[1].children[1].toDataURL('image/png'),
+									'premortem':premortem
+								});
+							}
+							for(var i=0;i<resources_assessment.children[1].children[1].length;i++) {
+								json['resources-assessment']['what-i-have'].push(resources_assessment.children[1].children[1].children[i].children[0].value);
+							}
+							for(var i=0;i<resources_assessment.children[2].children[1].length;i++) {
+								json['resources-assessment']['what-i-dont-have'].push(resources_assessment.children[2].children[1].children[i].children[0].value);
+							}
+							var flg = true;
+							for(var i=0;i<data.projects.length;i++) {
+								if(data.projects[i].name === json.name) {
+									flg = false;
+									Object.keys(json).forEach(function(key) {
+										data.projects[i][key] = json[key];
+									});
+								}
+							}
+							if(flg) {
+								console.log('we got here');
+								data.projects.push(json);
+								console.log(data);
+							}
+							firebase.firestore().collection('users').doc(email).set(data).catch(function(err) { console.err(err); });
+						};
+
+						var data = doc.data();
+						var li = document.createElement('li');
+						li.classList.add('project');
+						li.innerHTML = 'Create Project';
+						li.onclick = function() {
+							document.getElementById('projects').classList.remove('active');
+							document.getElementById('dashboard').classList.add('active');
+						};
+						document.getElementById('projects-list').appendChild(li);
+						data.projects.forEach(function(project) {
+							var li = document.createElement('li');
+							li.classList.add('project');
+							li.id = 'project-' + project.id;
+							li.innerHTML = project.name;
+							li.onclick = function() {
+								var json = project;
+								document.getElementById('name').value = json.name;
+								if(json.problem) {
+									document.getElementById('problem').children[1].value = json.problem;
+								}
+								while(notes.children.length - 2 < json.notes.length) {
+									notes.insertBefore(createNote(), document.getElementById('add-note'));
+								}
+								for(var i=0;i<json.notes.length;i++) {
+									notes.children[i + 1].children[2].value = json.notes[i];
+								}
+								while(blueprints.children.length - 2 < json.blueprints.length) {
+									blueprints.insertBefore(createBlueprint(), document.getElementById('add-blueprint'));
+								}
+								blueprints = document.getElementById('blueprints');
+								for(var i=0;i<json.blueprints.length;i++) {
+									blueprints.children[i + 1].children[2].children[0].value = json.blueprints[i].name;
+									var img = new Image();
+									img.src = json.blueprints[i].canvas;
+									img.onload = function() {
+										blueprints.children[i + 1].children[2].children[1].children[1]._context.drawImage(img, 0, 0,
+											blueprints.children[i + 1].children[2].children[1].children[1].width, blueprints.children[i + 1].children[2].children[1].children[1].height);
+									};
+									while(blueprints.children[i + 1].children[2].children[2].children[1].firstChild) {
+										blueprints.children[i + 1].children[2].children[2].children[1].removeChild(blueprints.children[i + 1].children[2].children[2].children[1].firstChild);
+									}
+									for(var j=0;j<json.blueprints[i].premortem.length;j++) {
+										var li = document.createElement('li');
+										var left = document.createElement('textarea');
+										left.classList.add('left');
+										left.placeholder = 'What might go wrong.';
+										left.value = json.blueprints[i].premortem[j].possibility;
+										li.appendChild(left);
+										var right = document.createElement('textarea');
+										right.classList.add('right');
+										right.placeholder = 'My plan of action.';
+										right.value = json.blueprints[i].premortem[j].plan;
+										li.appendChild(right);
+										var btn = document.createElement('button');
+										btn.innerHTML = 'X';
+										btn.onclick = function() { this.parentElement.parentElement.removeChild(this.parentElement); }
+										li.appendChild(btn);
+										blueprints.children[i + 1].children[2].children[2].children[1].appendChild(li);
+									}
+								}
+								for(var i=0;i<json['resources-assessment']['what-i-have'].length;i++) {
+									resources_assessment.children[1].children[1].children[i].children[0].innerHTML = json['resources-assessment']['what-i-have'][i];
+								}
+								for(var i=0;i<json['resources-assessment']['what-i-dont-have'].length;i++) {
+									resources_assessment.children[2].children[1].children[i].children[0].innerHTML = json['resources-assessment']['what-i-dont-have'][i];
+								}
+
+								document.getElementById('motivational-quote-generator').children[1].innerHTML = json['motivational-quote'];
+								(function() {
+									var value2 = json['settings']['primary-accent'];
+									value2 = isHex(value2) ? value2 : '#2B5D60';
+									var value1 = add(value2);
+									var value0 = add(value1);
+									var value3 = sub(value2);
+									var value4 = sub(value3);
+									document.body.style.setProperty('--primary-accent', value0);
+									document.body.style.setProperty('--primary-accent-1', value1);
+									document.body.style.setProperty('--primary-accent-2', value2);
+									document.body.style.setProperty('--primary-accent-3', value3);
+									document.body.style.setProperty('--primary-accent-4', value4);
+								})();
+
+								(function() {
+									var value = json['settings']['secondary-accent'];
+									value = isHex(value) ? value : '#284B63';
+									document.body.style.setProperty('--secondary-accent', value);
+									document.body.style.setProperty('--secondary-accent-1', add(value));
+								})();
+
+								(function() {
+									var value = json['settings']['tertiary-accent'];
+									value = isHex(value) ? value : '#ECECEC';
+									document.body.style.setProperty('--tertiary-accent', value);
+								})();
+
+								(function() {
+									var value = json['settings']['primary-text-color'];
+									value = isHex(value) ? value : '#FFFFFF';
+									document.body.style.setProperty('--primary-text-color', value);
+								})();
+
+								(function() {
+									var value = json['settings']['background-color'];
+									value = isHex(value) ? value : '#353535';
+									document.body.style.setProperty('--background-color', value);
+								})();
+
+								document.getElementById('projects').classList.remove('active');
+								document.getElementById('dashboard').classList.add('active');
+							};
+							document.getElementById('projects-list').appendChild(li);
+						});
+						// TODO: this
+					});
+				}
+			});
+			
+			document.getElementById('signin').classList.remove('active');
+			document.getElementById('projects').classList.add('active');
 		};
 	})();
 
@@ -349,7 +557,7 @@ window.onload = function() {
 		};
 	})();
 
-	(function() {
+	/*(function() {
 		document.getElementById('save').onclick = function(ev) {
 			// https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 			var a = document.createElement('a');
@@ -400,7 +608,7 @@ window.onload = function() {
 			document.body.appendChild(a); a.click(); document.body.removeChild(a);
 		};
 
-		document.getElementById('load').onclick = function(ev) { document.getElementById('load_hidden').click(); }
+		/*document.getElementById('load').onclick = function(ev) { document.getElementById('load_hidden').click(); }
 		document.getElementById('load_hidden').onchange = function(ev) {
 			var reader = new FileReader();
 			reader.onload = function(e) {
@@ -498,5 +706,5 @@ window.onload = function() {
 			}
 			reader.readAsText(ev.target.files[0]);
 		};
-	})();
+	})();*/
 };
